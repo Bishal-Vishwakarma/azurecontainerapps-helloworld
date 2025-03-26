@@ -1,0 +1,44 @@
+name: Trigger auto deployment for bishal-user16-my-container-app
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/bishal-user16-my-container-app-AutoDeployTrigger-b3ab3af8-32ae-47eb-ba77-3e92452463d3.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.BISHALUSER16MYCONTAINERAPP_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          registryUrl: bishal.azurecr.io
+          registryUsername: ${{ secrets.BISHALUSER16MYCONTAINERAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.BISHALUSER16MYCONTAINERAPP_REGISTRY_PASSWORD }}
+          containerAppName: bishal-user16-my-container-app
+          resourceGroup: bishal-user16-rg-my-container-apps
+          imageToBuild: bishal.azurecr.io/bishal-user16-my-container-app:${{ github.sha }}
+          
+            
+
+     
+
